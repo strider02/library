@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Public" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/views" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/src/storage/avatars" />
     </content>
     <orderEntry type="jdk" jdkName="18" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

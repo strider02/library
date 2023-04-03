@@ -29,23 +29,30 @@ public class Controller {
         communication.start();
     }
 
+
+    /*
+     | -----------------------------------
+     | DATABASE SQL METHODS
+     | -----------------------------------
+     */
     public User getUser(User user) throws Exception {
 
-        String query = DB.getInstance()
+        DB db = DB.getInstance();
+
+        String query = db
                 .table(user.getTable())
                 .where(user.getWhere())
                 .get();
-        System.out.println("query: " + query);
 
         Statement s = DB.getInstance().getConnection().createStatement();
         ResultSet rs = s.executeQuery(query);
-
+        db.commit();
 
         User retrievedUser = new User();
         if (rs.isBeforeFirst()) {
             rs.next();
 
-            // setting properties user instance with values retrieved from db
+            // setting user instance properties with values retrieved from db
             retrievedUser.setId((int) rs.getInt("id"));
             retrievedUser.setFirstname(rs.getString("firstname"));
             retrievedUser.setLastname(rs.getString("lastname"));
@@ -63,13 +70,16 @@ public class Controller {
 
     public Role getUserRole(Role role) throws Exception {
 
-        String query = DB.getInstance()
+        DB db = DB.getInstance();
+
+        String query = db
                 .table(role.getTable())
                 .where(role.getWhere())
                 .get();
 
         Statement s = DB.getInstance().getConnection().createStatement();
         ResultSet rs = s.executeQuery(query);
+        db.commit();
 
         Role retrievedRole = new Role();
         if (rs.isBeforeFirst()) {
@@ -112,7 +122,8 @@ public class Controller {
 
         String columns = this.getFields(user).get("names");
         String values = this.getFields(user).get("values");
-
+        System.out.println(columns);
+        System.out.println(values);
         DB db = DB.getInstance();
 
         String query = db
@@ -133,6 +144,13 @@ public class Controller {
         user.setWhere("username = '" + user.getUsername() + "'");
         return this.getUser(user);
     }
+
+
+    /*
+     | --------------------------------
+     | HELPERS
+     | --------------------------------
+     */
 
     /**
      * @param model Method returns field names - part of sql query
@@ -176,12 +194,25 @@ public class Controller {
     private static Object getFieldValue(Model model, Field field) {
 
         Method method = null;
-        String crumb = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
+        String fieldName = field.getName();
+        fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+
+        if (fieldName.contains("_")) {
+
+            String[] words = fieldName.split("_");
+
+            StringBuilder sb = new StringBuilder();
+            for (String word : words) {
+                sb.append(word.substring(0, 1).toUpperCase());
+                sb.append(word.substring(1));
+            }
+            fieldName = sb.toString();
+        }
 
         try {
             method = model
                     .getClass()
-                    .getMethod("get" + crumb);
+                    .getMethod("get" + fieldName);
 
             return method.invoke(model);
 

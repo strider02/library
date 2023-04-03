@@ -8,7 +8,11 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +55,7 @@ public class Register extends JFrame {
     private JLabel error;
 
     private JLabel login;
+    private File file = null;
     // End of variables declaration
 
 
@@ -82,7 +87,6 @@ public class Register extends JFrame {
 
     }
 
-    // todo: center align window vertical and horizontal
     private void initComponents() {
 
         background = new JPanel();
@@ -148,6 +152,7 @@ public class Register extends JFrame {
         firstname.setBounds(1920 / 2 - 50, 1080 / 2 - 160, 200, 23);
         background.add(firstname);
 
+        errorFirstname.setName("errorFirstname");
         errorFirstname.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorFirstname.setForeground(new Color(153, 0, 51));
         errorFirstname.setBounds(1920 / 2 - 45, 1080 / 2 - 140, 200, 23);
@@ -161,6 +166,7 @@ public class Register extends JFrame {
         lastname.setBounds(1920 / 2 - 50, 1080 / 2 - 120, 200, 23);
         background.add(lastname);
 
+        errorLastname.setName("errorLastname");
         errorLastname.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorLastname.setForeground(new Color(153, 0, 51));
         errorLastname.setBounds(1920 / 2 - 45, 1080 / 2 - 100, 200, 23);
@@ -174,6 +180,7 @@ public class Register extends JFrame {
         email.setBounds(1920 / 2 - 50, 1080 / 2 - 80, 200, 23);
         background.add(email);
 
+        errorEmail.setName("errorEmail");
         errorEmail.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorEmail.setForeground(new Color(153, 0, 51));
         errorEmail.setBounds(1920 / 2 - 45, 1080 / 2 - 60, 200, 23);
@@ -187,6 +194,7 @@ public class Register extends JFrame {
         username.setBounds(1920 / 2 - 50, 1080 / 2 - 40, 200, 23);
         background.add(username);
 
+        errorUsername.setName("errorUsername");
         errorUsername.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorUsername.setForeground(new Color(153, 0, 51));
         errorUsername.setBounds(1920 / 2 - 45, 1080 / 2 - 20, 200, 23);
@@ -205,6 +213,7 @@ public class Register extends JFrame {
         passwordRepeat.setBounds(1920 / 2 - 50, 1080 / 2 + 20, 200, 23);
         background.add(passwordRepeat);
 
+        errorPassword.setName("errorPassword");
         errorPassword.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorPassword.setForeground(new Color(153, 0, 51));
         errorPassword.setBounds(1920 / 2 - 45, 1080 / 2 + 40, 200, 23);
@@ -290,35 +299,24 @@ public class Register extends JFrame {
             String username = this.username.getText().trim();
             char[] password = this.password.getPassword();
             char[] passwordRepeat = this.passwordRepeat.getPassword();
+            String image = null;
 
-            // todo: selected image is null
-            JFileChooser fileChooser = new JFileChooser();
-            File selectedImage = fileChooser.getSelectedFile();
-            byte[] image = Files.readAllBytes(selectedImage.toPath());
-            System.out.println(image.toString());
+            if (file != null)
+                image = file.getName();
+
+
             // convert array to string
             String pass = new String(password);
             String passRepeat = new String(passwordRepeat);
 
-            if (!pass.equals(passRepeat)) {
-                this.errorPassword.setText("Not match!");
-                this.password.grabFocus();
-                this.password.requestFocus();
-
-                // execute code after xx seconds
-                CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                    this.errorPassword.setText("");
-                });
-
-                return;
-            }
 
             // performing request validation
-            if (!validateRequest(firstname, lastname, email, username, password))
+            if (!validateRequest(firstname, lastname, email, username, pass, passRepeat))
                 return;
 
             Map<String, String> params = new HashMap<>();
             params.put("username", username);
+
 
             // checking if user with provided username exists
             User user = Controller.getInstance().getUser(params);
@@ -330,10 +328,10 @@ public class Register extends JFrame {
                 this.username.grabFocus();
                 this.username.requestFocus();
 
-                // execute code after xx seconds
-                CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                    this.error.setText("");
-                });
+                // remove error message after xx seconds
+                this.delay(error, 5);
+
+                return;
 
             } else {
 
@@ -343,19 +341,24 @@ public class Register extends JFrame {
                 params.put("email", email);
                 params.put("username", username);
                 params.put("password", pass);
+                if (image != null)
+                    params.put("image", "storage/avatars/" + image);
 
-                // insert and login new user
+
+                // save and login new user
                 User newUser = Controller.getInstance().addAndReturnUser(params);
+
                 if (newUser.getUsername() == null) {
                     error.setText("Error occurred while registration process.");
 
-                    // execute code after xx seconds
-                    CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                        this.error.setText("");
-                    });
+                    // remove error message after xx seconds
+                    this.delay(this.error, 5);
+
                     return;
                 }
 
+                // saving image to disk after successful storing new user to database
+                this.storeFile(file, null);
 
                 this.dispose();
                 Index.main(newUser);
@@ -364,6 +367,39 @@ public class Register extends JFrame {
         } catch (Exception ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void storeFile(File file, String path) {
+
+        String filePath = file.getAbsolutePath();
+        String filename = Paths.get(filePath).getFileName().toString();
+        if (path == null)
+            path = "App/src/storage/avatars/";
+
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        File sourceFile = new File(filePath);
+        File destinationFile = new File(path + filename);
+
+        if (destinationFile.exists()) {
+//            int dotIndex = filename.lastIndexOf(".");
+//            String baseName = filename.substring(0, dotIndex);
+//            String extension = filename.substring(dotIndex);
+//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+//            String newFileName = baseName + "_" + timestamp + extension;
+//            destinationFile = new File(path + newFileName);
+            return;
+        }
+
+        try {
+            Files.copy(sourceFile.toPath(), destinationFile.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void browseActionPerformed(java.awt.event.ActionEvent evt) {
@@ -375,16 +411,16 @@ public class Register extends JFrame {
         browseImageFile.addChoosableFileFilter(filter);
 
         if (showOpenDialog == JFileChooser.APPROVE_OPTION) {
-            File selectedImageFile = browseImageFile.getSelectedFile();
-            String selectedImagePath = selectedImageFile.getAbsolutePath();
+            file = browseImageFile.getSelectedFile();
+            String selectedImagePath = file.getAbsolutePath();
 
             // resizing
             ImageIcon icon = new ImageIcon(selectedImagePath);
             Image image = icon.getImage().getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
 
+
             // setting image on form label
             imageLabel.setText(null);
-//            imageLabel.setBorder(null);
             imageLabel.setIcon(new ImageIcon(image));
         }
     }
@@ -394,7 +430,7 @@ public class Register extends JFrame {
         Login.main(null);
     }
 
-    private boolean validateRequest(String firstname, String lastname, String email, String username, char[] password) {
+    private boolean validateRequest(String firstname, String lastname, String email, String username, String password, String passwordRepeat) {
 
         boolean result = true;
 
@@ -404,10 +440,7 @@ public class Register extends JFrame {
             this.firstname.grabFocus();
             this.firstname.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorFirstname.setText("");
-            });
+            this.delay(this.errorFirstname, 5);
         }
 
         if (lastname == null | lastname.equals("")) {
@@ -416,22 +449,18 @@ public class Register extends JFrame {
             this.lastname.grabFocus();
             this.lastname.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorLastname.setText("");
-            });
+            this.delay(this.errorLastname, 5);
+
         }
 
-        if (email == null | email.equals("") | email.contains("@")) {
+        if (!email.contains("@")) {
             result = false;
             this.errorEmail.setText("Email is required!");
             this.email.grabFocus();
             this.email.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorEmail.setText("");
-            });
+            this.delay(this.errorEmail, 5);
+
         }
 
         if (username == null | username.equals("")) {
@@ -440,27 +469,55 @@ public class Register extends JFrame {
             this.username.grabFocus();
             this.username.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorUsername.setText("");
-            });
+            this.delay(this.errorUsername, 5);
+
         }
 
-        if (password.length == 0) {
+        if (password == null | password.equals("")) {
             result = false;
             this.errorPassword.setText("Password is required!");
             this.password.grabFocus();
             this.password.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorPassword.setText("");
+            this.delay(this.errorPassword, 5);
 
-            });
+
+            if (!passwordRepeat.equals(passwordRepeat)) {
+                result = false;
+                this.errorPassword.setText("Not match!");
+                this.password.grabFocus();
+                this.password.requestFocus();
+
+                // execute code after xx seconds
+                this.delay(this.errorPassword, 5);
+
+            }
         }
 
         return result;
 
+    }
+
+    /**
+     * Removes validation error message after xx seconds
+     *
+     * @param label
+     * @param seconds
+     */
+    private void delay(JLabel label, int seconds) {
+        CompletableFuture.delayedExecutor(seconds, TimeUnit.SECONDS).execute(() -> {
+
+            try {
+
+                Method method;
+
+                method = label.getClass().getMethod("setText", String.class);
+                method.invoke(label, "");
+
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 
