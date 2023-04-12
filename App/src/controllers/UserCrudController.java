@@ -18,12 +18,6 @@ public class UserCrudController implements CrudController<User> {
 
 
     public UserCrudController() {
-//        users.add(new User("Joe", "Doe", "joe.doe@bookstore.com", "admin", "123", "UniCredit Bank", "1234-1234-1234-1234"));
-    }
-
-    @Override
-    public User find(long id) {
-        return null;
     }
 
     @Override
@@ -48,6 +42,46 @@ public class UserCrudController implements CrudController<User> {
         transfers.Client cto = new transfers.Client();
         cto.setOperation(GET_USER);
         cto.setParameter(user);
+
+        // sending request to server
+        Controller.getInstance().request(cto);
+
+        // getting response from server
+        Server sto = Controller.getInstance().response();
+
+        if (sto.getStatus() == SERVER_STATUS_NOK)
+            throw new Exception(sto.getError());
+
+
+        return (User) sto.getResult();
+    }
+
+    public List<User> getUsersWithRole(String roleName) throws Exception {
+        // creating transfer object from client side
+        transfers.Client cto = new transfers.Client();
+        cto.setOperation(GET_USERS_WITH_ROLE);
+        cto.setParameter(roleName);
+
+        // sending request to server
+        Controller.getInstance().request(cto);
+
+        // getting response from server
+        Server sto = Controller.getInstance().response();
+
+        if (sto.getStatus() == SERVER_STATUS_NOK)
+            throw new Exception(sto.getError());
+
+
+        return (List<User>) sto.getResult();
+    }
+
+    public User find(int id) throws Exception {
+
+
+        // creating transfer object from client side
+        transfers.Client cto = new transfers.Client();
+        cto.setOperation(FIND_USER);
+        cto.setParameter(id);
 
         // sending request to server
         Controller.getInstance().request(cto);
@@ -146,13 +180,8 @@ public class UserCrudController implements CrudController<User> {
 
                 method.invoke(user, v);
 
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException |
+                     IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
 
@@ -163,9 +192,22 @@ public class UserCrudController implements CrudController<User> {
     }
 
     @Override
-    public List<User> getAll() {
-//        return users;
-        return null;
+    public List<User> all() throws Exception {
+        // creating transfer object from client side
+        transfers.Client cto = new transfers.Client();
+        cto.setOperation(GET_USERS);
+
+        // sending request to server
+        Controller.getInstance().request(cto);
+
+        // getting response from server
+        Server sto = Controller.getInstance().response();
+
+        if (sto.getStatus() == SERVER_STATUS_NOK)
+            throw new Exception(sto.getError());
+
+
+        return (List<User>) sto.getResult();
     }
 
     @Override
@@ -178,7 +220,6 @@ public class UserCrudController implements CrudController<User> {
     public void delete(User user) {
         users.remove(user);
     }
-
 
 
     private static void prepareData(User user, Map<String, String> params) {
@@ -194,13 +235,8 @@ public class UserCrudController implements CrudController<User> {
 
                 method.invoke(user, v);
 
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException |
+                     IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         });

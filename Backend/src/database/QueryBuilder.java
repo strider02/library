@@ -9,7 +9,7 @@ public interface QueryBuilder {
     /**
      * @param columns
      */
-    database.QueryBuilder columns(String... columns);
+    database.QueryBuilder select(String... columns);
 
 
     /**

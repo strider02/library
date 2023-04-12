@@ -9,7 +9,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Controller {
     public static Controller instance;
@@ -34,6 +36,12 @@ public class Controller {
      | -----------------------------------
      | DATABASE SQL METHODS
      | -----------------------------------
+     */
+
+    /**
+     * @param user
+     * @return
+     * @throws Exception
      */
     public User getUser(User user) throws Exception {
 
@@ -68,6 +76,11 @@ public class Controller {
         return retrievedUser;
     }
 
+    /**
+     * @param role
+     * @return
+     * @throws Exception
+     */
     public Role getUserRole(Role role) throws Exception {
 
         DB db = DB.getInstance();
@@ -92,7 +105,11 @@ public class Controller {
         return retrievedRole;
     }
 
-
+    /**
+     * @param user
+     * @return
+     * @throws Exception
+     */
     public boolean addUser(User user) throws Exception {
 
         String columns = this.getFields(user).get("names");
@@ -102,7 +119,7 @@ public class Controller {
 
         String query = db
                 .table(user.getTable())
-                .columns(columns)
+                .select(columns)
                 .values(values)
                 .insert();
 
@@ -118,17 +135,21 @@ public class Controller {
         return true;
     }
 
+    /**
+     * @param user
+     * @return
+     * @throws Exception
+     */
     public User addAndReturnUser(User user) throws Exception {
 
         String columns = this.getFields(user).get("names");
         String values = this.getFields(user).get("values");
-        System.out.println(columns);
-        System.out.println(values);
+
         DB db = DB.getInstance();
 
         String query = db
                 .table(user.getTable())
-                .columns(columns)
+                .select(columns)
                 .values(values)
                 .insert();
 
@@ -145,6 +166,207 @@ public class Controller {
         return this.getUser(user);
     }
 
+
+    public List getAllUsers(List parameter) throws Exception {
+        DB db = DB.getInstance();
+
+        String query = db
+                .table(new User().getTable())
+                .join("left join roles r on r.id = users.role_id")
+                .get();
+
+        Statement s = DB.getInstance().getConnection().createStatement();
+        ResultSet rs = s.executeQuery(query);
+        db.commit();
+
+
+        List<User> users = new ArrayList<>();
+
+
+        while (rs.next()) {
+
+            User retrievedUser = new User();
+
+            retrievedUser.setId((int) rs.getInt("id"));
+            retrievedUser.setFirstname(rs.getString("firstname"));
+            retrievedUser.setLastname(rs.getString("lastname"));
+            retrievedUser.setEmail(rs.getString("email"));
+            retrievedUser.setUsername(rs.getString("username"));
+            retrievedUser.setPassword(rs.getString("password"));
+            retrievedUser.setRoleId(rs.getInt("role_id"));
+            retrievedUser.setImage(rs.getString("image"));
+            retrievedUser.setCreatedAt(rs.getDate("created_at"));
+            retrievedUser.setUpdatedAt(rs.getDate("updated_at"));
+
+            // sql returns users role.id and role.name,
+            // so we create role instance and set it to values retrieved from db for current user
+            Role role = new Role();
+            role.setId(rs.getInt("r.id"));
+            role.setName(rs.getString("name"));
+
+            // now set role to user instance
+            retrievedUser.setRole(role);
+
+            users.add(retrievedUser);
+        }
+
+        return users;
+    }
+
+    public List getAllRoles(List parameter) throws Exception {
+
+        DB db = DB.getInstance();
+
+        String query = db
+                .table(new Role().getTable())
+                .get();
+
+        Statement s = DB.getInstance().getConnection().createStatement();
+        ResultSet rs = s.executeQuery(query);
+        db.commit();
+
+
+        List<Role> roles = new ArrayList<>();
+
+
+        while (rs.next()) {
+
+            Role retrievedRole = new Role();
+
+            retrievedRole.setId((int) rs.getInt("id"));
+            retrievedRole.setName(rs.getString("name"));
+
+            roles.add(retrievedRole);
+        }
+
+        return roles;
+    }
+
+    public Role findRole(Role role) throws Exception {
+
+        DB db = DB.getInstance();
+
+        String query = db
+                .table(role.getTable())
+                .where(role.getWhere())
+                .get();
+
+        Statement s = DB.getInstance().getConnection().createStatement();
+        ResultSet rs = s.executeQuery(query);
+        db.commit();
+
+        Role retrievedRole = new Role();
+        if (rs.isBeforeFirst()) {
+            rs.next();
+
+            // setting user instance properties with values retrieved from db
+            retrievedRole.setId((int) rs.getInt("id"));
+            retrievedRole.setName(rs.getString("name"));
+        }
+
+        return retrievedRole;
+
+    }
+
+    public User findUser(int id) throws Exception {
+
+        DB db = DB.getInstance();
+
+        String query = db
+                .table("users")
+                .join("left join roles r on r.id = users.role_id")
+                .where("users.id = " + id)
+                .get();
+
+        Statement s = DB.getInstance().getConnection().createStatement();
+        ResultSet rs = s.executeQuery(query);
+        db.commit();
+
+        User retrievedUser = new User();
+        if (rs.isBeforeFirst()) {
+            rs.next();
+
+            // setting user instance properties with values retrieved from db
+            retrievedUser.setId((int) rs.getInt("id"));
+            retrievedUser.setFirstname(rs.getString("firstname"));
+            retrievedUser.setLastname(rs.getString("lastname"));
+            retrievedUser.setEmail(rs.getString("email"));
+            retrievedUser.setUsername(rs.getString("username"));
+            retrievedUser.setPassword(rs.getString("password"));
+            retrievedUser.setRoleId(rs.getInt("role_id"));
+            retrievedUser.setImage(rs.getString("image"));
+            retrievedUser.setCreatedAt(rs.getDate("created_at"));
+            retrievedUser.setUpdatedAt(rs.getDate("updated_at"));
+        }
+
+        // sql returns users role.id and role.name,
+        // so we create role instance and set it to values retrieved from db for current user
+        Role role = new Role();
+        role.setId(rs.getInt("r.id"));
+        role.setName(rs.getString("name"));
+
+        // now set role to user instance
+        retrievedUser.setRole(role);
+
+
+        return retrievedUser;
+
+    }
+
+
+    public List getUsersWithRole(String roleName) throws Exception {
+
+        DB db = DB.getInstance();
+
+        String where;
+        if (roleName.equals("*"))
+            where = "1 = 1";
+        else
+            where = "r.name = '" + roleName + "'";
+
+        String query = db
+                .table(new User().getTable())
+                .join("left join roles r on r.id = users.role_id")
+                .where(where)
+                .get();
+
+        Statement s = DB.getInstance().getConnection().createStatement();
+        ResultSet rs = s.executeQuery(query);
+        db.commit();
+
+
+        List<User> users = new ArrayList<>();
+
+
+        while (rs.next()) {
+
+            User retrievedUser = new User();
+
+            retrievedUser.setId((int) rs.getInt("id"));
+            retrievedUser.setFirstname(rs.getString("firstname"));
+            retrievedUser.setLastname(rs.getString("lastname"));
+            retrievedUser.setEmail(rs.getString("email"));
+            retrievedUser.setUsername(rs.getString("username"));
+            retrievedUser.setPassword(rs.getString("password"));
+            retrievedUser.setRoleId(rs.getInt("role_id"));
+            retrievedUser.setImage(rs.getString("image"));
+            retrievedUser.setCreatedAt(rs.getDate("created_at"));
+            retrievedUser.setUpdatedAt(rs.getDate("updated_at"));
+
+            // sql returns users role.id and role.name,
+            // so we create role instance and set it to values retrieved from db for current user
+            Role role = new Role();
+            role.setId(rs.getInt("r.id"));
+            role.setName(rs.getString("name"));
+
+            // now set role to user instance
+            retrievedUser.setRole(role);
+
+            users.add(retrievedUser);
+        }
+
+        return users;
+    }
 
     /*
      | --------------------------------

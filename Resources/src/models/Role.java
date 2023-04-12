@@ -14,6 +14,8 @@ public class Role extends Model {
 
     private final String table = "roles";
 
+    private List<User> users;
+
     public Role() {
     }
 

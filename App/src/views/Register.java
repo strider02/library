@@ -1,5 +1,6 @@
 package views;
 
+import bootstrap.Helper;
 import controllers.Controller;
 import models.User;
 
@@ -9,14 +10,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,34 +24,13 @@ public class Register extends JFrame {
 
     // Variables declaration
     private JPanel background;
-    private JLabel window;
-    private JLabel form;
-    private JLabel profileIcon;
-    private JLabel firstnameLabel;
-    private JTextField firstname;
-    private JLabel lastnameLabel;
-    private JTextField lastname;
-    private JLabel emailLabel;
-    private JTextField email;
-    private JLabel usernameLabel;
-    private JTextField username;
-    private JLabel passwordLabel;
-    private JPasswordField password;
-    private JLabel passwordRepeatLabel;
-    private JPasswordField passwordRepeat;
-    private JLabel imageLabel;
-    private JButton browse;
-    private JButton submit;
-
-    private JLabel errorFirstname;
-    private JLabel errorLastname;
-    private JLabel errorEmail;
-    private JLabel errorUsername;
-    private JLabel errorPassword;
-    private JLabel errorPasswordRepeat;
-    private JLabel error;
-
+    private JLabel window, form, profileIcon, firstnameLabel, lastnameLabel, emailLabel, usernameLabel, passwordLabel, imageLabel;
+    private JLabel errorFirstname, errorLastname, errorEmail, errorUsername, errorPassword, error;
     private JLabel login;
+    private JTextField firstname, lastname, email, username;
+    private JPasswordField password, passwordRepeat;
+    private JButton browse, submit;
+
     private File file = null;
     // End of variables declaration
 
@@ -123,6 +99,7 @@ public class Register extends JFrame {
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         setSize(new Dimension(1920, 1080));
         setTitle("Java Core Swing GUI project - Register");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(Register.class.getResource("../storage/icons/favicon.png")));
 
         // set size and layout
         background.setLayout(null);
@@ -311,8 +288,7 @@ public class Register extends JFrame {
 
 
             // performing request validation
-            if (!validateRequest(firstname, lastname, email, username, pass, passRepeat))
-                return;
+            if (!validateRequest(firstname, lastname, email, username, pass, passRepeat)) return;
 
             Map<String, String> params = new HashMap<>();
             params.put("username", username);
@@ -324,14 +300,12 @@ public class Register extends JFrame {
 
             if (user.getUsername() != null) {
 
-                error.setText("Sorry, that username already exists. Please provide another one.");
+                error.setText("Sorry, requested username already exists. Please provide another one.");
                 this.username.grabFocus();
                 this.username.requestFocus();
 
-                // remove error message after xx seconds
-                this.delay(error, 5);
-
-                return;
+                // removing error message
+                Helper.delay(error, 5);
 
             } else {
 
@@ -351,17 +325,19 @@ public class Register extends JFrame {
                 if (newUser.getUsername() == null) {
                     error.setText("Error occurred while registration process.");
 
-                    // remove error message after xx seconds
-                    this.delay(this.error, 5);
+                    // removing error message
+                    Helper.delay(this.error, 5);
+
 
                     return;
                 }
 
                 // saving image to disk after successful storing new user to database
-                this.storeFile(file, null);
+                if (file != null)
+                    this.storeFile(file, null);
 
                 this.dispose();
-                Index.main(newUser);
+//                Dashboard.main(newUser);
             }
 
         } catch (Exception ex) {
@@ -369,38 +345,6 @@ public class Register extends JFrame {
         }
     }
 
-    private void storeFile(File file, String path) {
-
-        String filePath = file.getAbsolutePath();
-        String filename = Paths.get(filePath).getFileName().toString();
-        if (path == null)
-            path = "App/src/storage/avatars/";
-
-        File directory = new File(path);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
-        File sourceFile = new File(filePath);
-        File destinationFile = new File(path + filename);
-
-        if (destinationFile.exists()) {
-//            int dotIndex = filename.lastIndexOf(".");
-//            String baseName = filename.substring(0, dotIndex);
-//            String extension = filename.substring(dotIndex);
-//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-//            String newFileName = baseName + "_" + timestamp + extension;
-//            destinationFile = new File(path + newFileName);
-            return;
-        }
-
-        try {
-            Files.copy(sourceFile.toPath(), destinationFile.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 
     private void browseActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser browseImageFile = new JFileChooser();
@@ -440,7 +384,8 @@ public class Register extends JFrame {
             this.firstname.grabFocus();
             this.firstname.requestFocus();
 
-            this.delay(this.errorFirstname, 5);
+            // removing error message
+            Helper.delay(this.errorFirstname, 5);
         }
 
         if (lastname == null | lastname.equals("")) {
@@ -449,8 +394,8 @@ public class Register extends JFrame {
             this.lastname.grabFocus();
             this.lastname.requestFocus();
 
-            this.delay(this.errorLastname, 5);
-
+            // removing error message
+            Helper.delay(this.errorLastname, 5);
         }
 
         if (!email.contains("@")) {
@@ -459,8 +404,8 @@ public class Register extends JFrame {
             this.email.grabFocus();
             this.email.requestFocus();
 
-            this.delay(this.errorEmail, 5);
-
+            // removing error message
+            Helper.delay(this.errorEmail, 5);
         }
 
         if (username == null | username.equals("")) {
@@ -469,8 +414,8 @@ public class Register extends JFrame {
             this.username.grabFocus();
             this.username.requestFocus();
 
-            this.delay(this.errorUsername, 5);
-
+            // removing error message
+            Helper.delay(this.errorUsername, 5);
         }
 
         if (password == null | password.equals("")) {
@@ -479,47 +424,49 @@ public class Register extends JFrame {
             this.password.grabFocus();
             this.password.requestFocus();
 
-            this.delay(this.errorPassword, 5);
+            // removing error message
+            Helper.delay(this.errorPassword, 5);
+        }
 
+        if (!passwordRepeat.equals(password)) {
+            result = false;
+            this.errorPassword.setText("Not match!");
+            this.password.grabFocus();
+            this.password.requestFocus();
 
-            if (!passwordRepeat.equals(passwordRepeat)) {
-                result = false;
-                this.errorPassword.setText("Not match!");
-                this.password.grabFocus();
-                this.password.requestFocus();
-
-                // execute code after xx seconds
-                this.delay(this.errorPassword, 5);
-
-            }
+            // removing error message
+            Helper.delay(this.errorPassword, 5);
         }
 
         return result;
-
     }
 
-    /**
-     * Removes validation error message after xx seconds
-     *
-     * @param label
-     * @param seconds
-     */
-    private void delay(JLabel label, int seconds) {
-        CompletableFuture.delayedExecutor(seconds, TimeUnit.SECONDS).execute(() -> {
+    private void storeFile(File file, String path) {
 
-            try {
+        String filePath = file.getAbsolutePath();
+        String filename = Paths.get(filePath).getFileName().toString();
+        if (path == null)
+            path = "App/src/storage/avatars/";
 
-                Method method;
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
-                method = label.getClass().getMethod("setText", String.class);
-                method.invoke(label, "");
+        File sourceFile = new File(filePath);
+        File destinationFile = new File(path + filename);
 
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        // if file exists we don't want to save it again
+        // at this point file path is already persisted into database
+        if (destinationFile.exists()) return;
+
+        try {
+            // coping file is not good decision
+            // this is just for presentational purposes
+            Files.copy(sourceFile.toPath(), destinationFile.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-
 }
 

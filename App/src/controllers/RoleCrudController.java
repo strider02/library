@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static utillities.OPERATIONS.GET_USER_ROLE;
-import static utillities.STATUSES.SERVER_STATUS_NOK;
+import static utillities.OPERATIONS.*;
+import static utillities.STATUSES.*;
 
 public class RoleCrudController {
     private List<Role> roles = new ArrayList<>();
@@ -22,8 +22,47 @@ public class RoleCrudController {
 //        users.add(new User("Joe", "Doe", "joe.doe@bookstore.com", "admin", "123", "UniCredit Bank", "1234-1234-1234-1234"));
     }
 
-    public Role find(int id) {
-        return null;
+    public Role find(int id) throws Exception {
+
+        Role role = new Role();
+
+        role.setWhere("id = '" + id + "'");
+
+        // creating transfer object from client side
+        transfers.Client cto = new transfers.Client();
+        cto.setOperation(FIND_ROLE);
+        cto.setParameter(role);
+
+        // sending request to server
+        Controller.getInstance().request(cto);
+
+        // getting response from server
+        Server sto = Controller.getInstance().response();
+
+        if (sto.getStatus() == SERVER_STATUS_NOK)
+            throw new Exception(sto.getError());
+
+
+        return (Role) sto.getResult();
+    }
+
+    public List<Role> all() throws Exception {
+
+        // creating transfer object from client side
+        transfers.Client cto = new transfers.Client();
+        cto.setOperation(GET_ROLES);
+
+        // sending request to server
+        Controller.getInstance().request(cto);
+
+        // getting response from server
+        Server sto = Controller.getInstance().response();
+
+        if (sto.getStatus() == SERVER_STATUS_NOK)
+            throw new Exception(sto.getError());
+
+
+        return (List<Role>) sto.getResult();
     }
 
     public Role get(Role role, Map<String, String> params) throws Exception {

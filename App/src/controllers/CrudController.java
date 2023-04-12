@@ -6,10 +6,9 @@ import java.util.Map;
 
 public interface CrudController<Model> {
 
-    Model find(long id) throws Exception;
     Model get(Model model, Map<String, String> params) throws Exception;
 
-    List<Model> getAll();
+    List<Model> all() throws Exception;
 
     void save(Model model);
 

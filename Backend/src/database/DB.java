@@ -93,7 +93,7 @@ public class DB implements QueryBuilder {
     }
 
     @Override
-    public QueryBuilder columns(String... columns) {
+    public QueryBuilder select(String... columns) {
         this.columns.addAll(Arrays.asList(columns));
         return this;
     }

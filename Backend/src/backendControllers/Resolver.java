@@ -1,17 +1,19 @@
 package backendControllers;
 
 import models.Model;
-import models.User;
 import models.Role;
+import models.User;
 import transfers.Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 
 import static utillities.OPERATIONS.*;
-import static utillities.STATUSES.*;
+import static utillities.STATUSES.SERVER_STATUS_NOK;
+import static utillities.STATUSES.SERVER_STATUS_OK;
 
 public class Resolver extends Thread {
 
@@ -83,26 +85,80 @@ public class Resolver extends Thread {
                         }
                         respond(sto);
                     }
+                    case GET_USERS -> {
+                        try {
+                            List<User> result = Controller.getInstance().getAllUsers((List) cto.getParameter());
+                            sto.setResult(result);
+                            sto.setStatus(SERVER_STATUS_OK);
+                        } catch (Exception e) {
+                            sto.setStatus(SERVER_STATUS_NOK);
+                            sto.setError(e.getMessage());
+                        }
+                        respond(sto);
+                    }
+                    case FIND_ROLE -> {
+                        try {
+                            Role result = Controller.getInstance().findRole((Role) cto.getParameter());
+                            sto.setResult(result);
+                            sto.setStatus(SERVER_STATUS_OK);
+                        } catch (Exception e) {
+                            sto.setStatus(SERVER_STATUS_NOK);
+                            sto.setError(e.getMessage());
+                        }
+                        respond(sto);
+                    }
+                    case GET_ROLES -> {
+                        try {
+                            List<Role> result = Controller.getInstance().getAllRoles((List) cto.getParameter());
+                            sto.setResult(result);
+                            sto.setStatus(SERVER_STATUS_OK);
+                        } catch (Exception e) {
+                            sto.setStatus(SERVER_STATUS_NOK);
+                            sto.setError(e.getMessage());
+                        }
+                        respond(sto);
+                    }
+                    case GET_USERS_WITH_ROLE -> {
+                        try {
+                            List<User> result = Controller.getInstance().getUsersWithRole((String) cto.getParameter());
+                            sto.setResult(result);
+                            sto.setStatus(SERVER_STATUS_OK);
+                        } catch (Exception e) {
+                            sto.setStatus(SERVER_STATUS_NOK);
+                            sto.setError(e.getMessage());
+                        }
+                        respond(sto);
+                    }
+                    case FIND_USER -> {
+                        try {
+                            User result = Controller.getInstance().findUser((int) cto.getParameter());
+                            sto.setResult(result);
+                            sto.setStatus(SERVER_STATUS_OK);
+                        } catch (Exception e) {
+                            sto.setStatus(SERVER_STATUS_NOK);
+                            sto.setError(e.getMessage());
+                        }
+                        respond(sto);
+                    }
+
                 }
 
             } catch (Exception e) {
-                //
+                e.getMessage();
             }
         }
     }
 
     private transfers.Client receive() {
-        transfers.Client cto = new transfers.Client();
 
+        transfers.Client cto = new transfers.Client();
 
         try {
 
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             cto = (transfers.Client) in.readObject();
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 

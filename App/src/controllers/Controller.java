@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.util.List;
 import java.util.Map;
 
 public class Controller {
@@ -25,8 +26,9 @@ public class Controller {
 
     public void connectToServer() {
         try {
+            Thread.sleep(200);
             socket = new Socket("localhost", 9000);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -50,9 +52,7 @@ public class Controller {
             in = new ObjectInputStream(socket.getInputStream());
             sto = (transfers.Server) in.readObject();
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
@@ -108,6 +108,42 @@ public class Controller {
 
 
         return crud.storeAndReturn(user, params);
+    }
+
+    public List getUsers() throws Exception {
+
+        UserCrudController crud = new UserCrudController();
+
+
+        return crud.all();
+    }
+
+    public Role getRole(int role_id) throws Exception {
+
+        RoleCrudController crud = new RoleCrudController();
+
+        return crud.find(role_id);
+    }
+
+    public List<Role> getRoles() throws Exception {
+
+        RoleCrudController crud = new RoleCrudController();
+
+        return crud.all();
+    }
+
+    public List<User> getUsersWithRole(String roleName) throws Exception{
+
+        UserCrudController crud = new UserCrudController();
+
+        return crud.getUsersWithRole(roleName);
+    }
+
+    public User findUser(int user_id) throws Exception{
+
+        UserCrudController crud = new UserCrudController();
+
+        return crud.find(user_id);
     }
 
     /*

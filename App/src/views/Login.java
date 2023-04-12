@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package views;
 
+import bootstrap.Helper;
 import controllers.Controller;
 import models.User;
 
@@ -11,8 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,20 +17,13 @@ import java.util.logging.Logger;
 public class Login extends JFrame {
 
     // Variables declaration
-    private JPanel background;
-    private JLabel window;
-    private JLabel form;
-    private JLabel profileIcon;
-    private JLabel usernameLabel;
+    private JPanel panelMain;
+    private JLabel backgroundImage, form, profileIcon, usernameLabel, passwordLabel, errorUsername, errorPassword, error, register;
     private JTextField username;
-    private JLabel passwordLabel;
     private JPasswordField password;
     private JButton submit;
 
-    private JLabel errorUsername;
-    private JLabel errorPassword;
-    private JLabel error;
-    private JLabel register;
+
     // End of variables declaration
 
 
@@ -73,15 +61,10 @@ public class Login extends JFrame {
 
     }
 
-//    public static void destroy() {
-//        Login =  null;
-//    }
-
-    // todo: center align window vertical and horizontal
     private void initComponents() {
 
-        background = new JPanel();
-        window = new JLabel();
+        panelMain = new JPanel();
+        backgroundImage = new JLabel();
         form = new JLabel();
         profileIcon = new JLabel();
         usernameLabel = new JLabel();
@@ -100,17 +83,18 @@ public class Login extends JFrame {
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         setSize(new Dimension(1920, 1080));
         setTitle("Java Core Swing GUI project - Login");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("../storage/icons/favicon.png")));
 
         // set size and layout
-        background.setLayout(null);
-        background.setSize(new java.awt.Dimension(1920, 1080));
+        panelMain.setLayout(null);
+        panelMain.setSize(new java.awt.Dimension(1920, 1080));
 
         // avatar icon
         profileIcon.setIcon(new ImageIcon("App/src/storage/avatar80x80.png"));
         profileIcon.setHorizontalAlignment(SwingConstants.CENTER);
         profileIcon.setVerticalAlignment(SwingConstants.CENTER);
         profileIcon.setBounds(0, -180, 1920, 1080);
-        background.add(profileIcon);
+        panelMain.add(profileIcon);
 
         // server validation error
         error.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
@@ -119,37 +103,37 @@ public class Login extends JFrame {
         error.setHorizontalAlignment(SwingConstants.CENTER);
         error.setVerticalAlignment(SwingConstants.CENTER);
         error.setBounds(1920 / 2 - 230, 420, 460, 25);
-        background.add(error);
+        panelMain.add(error);
 
         // username
         usernameLabel.setText("Username");
         usernameLabel.setBounds(1920 / 2 - 160, 1080 / 2 - 50, 70, 23);
-        background.add(usernameLabel);
+        panelMain.add(usernameLabel);
 
         username.setBackground(new Color(255, 255, 255));
         username.setBounds(1920 / 2 - 50, 1080 / 2 - 50, 200, 23);
-        background.add(username);
+        panelMain.add(username);
 
         errorUsername.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorUsername.setForeground(new Color(153, 0, 51));
 //        errorUsername.setText("Username is required!");
         errorUsername.setBounds(1920 / 2 - 45, 1080 / 2 - 30, 200, 23);
-        background.add(errorUsername);
+        panelMain.add(errorUsername);
 
         // password
         passwordLabel.setText("Password");
         passwordLabel.setBounds(1920 / 2 - 160, 1080 / 2 - 10, 70, 23);
-        background.add(passwordLabel);
+        panelMain.add(passwordLabel);
 
         password.setBackground(new Color(255, 255, 255));
         password.setBounds(1920 / 2 - 50, 1080 / 2 - 10, 200, 23);
-        background.add(password);
+        panelMain.add(password);
 
         errorPassword.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorPassword.setForeground(new Color(153, 0, 51));
 //        errorPassword.setText("Password is required!");
         errorPassword.setBounds(1920 / 2 - 45, 1080 / 2 + 10, 200, 23);
-        background.add(errorPassword);
+        panelMain.add(errorPassword);
 
         // submit button action
         submit.setText("Login");
@@ -159,7 +143,7 @@ public class Login extends JFrame {
                 submitActionPerformed(evt);
             }
         });
-        background.add(submit);
+        panelMain.add(submit);
 
         // registration action
         register.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 12));
@@ -171,19 +155,19 @@ public class Login extends JFrame {
             }
         });
         register.setBounds(1920 / 2 - 60, 670, 1920, 23);
-        background.add(register);
+        panelMain.add(register);
 
         // card background image
         form.setIcon(new ImageIcon("App/src/storage/background_login480x400.jpg"));
         form.setHorizontalAlignment(SwingConstants.CENTER);
         form.setVerticalAlignment(SwingConstants.CENTER);
         form.setBounds(0, -70, 1920, 1080);
-        background.add(form);
+        panelMain.add(form);
 
         // default background image
-        window.setIcon(new ImageIcon("App/src/storage/background.jpg"));
-        window.setBounds(0, 0, 1920, 1080);
-        background.add(window);
+        backgroundImage.setIcon(new ImageIcon("App/src/storage/background.jpg"));
+        backgroundImage.setBounds(0, 0, 1920, 1080);
+        panelMain.add(backgroundImage);
 
 
         // creating group layout
@@ -191,11 +175,11 @@ public class Login extends JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(background, GroupLayout.DEFAULT_SIZE, 1920, Short.MAX_VALUE)
+                        .addComponent(panelMain, GroupLayout.DEFAULT_SIZE, 1920, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(background, GroupLayout.PREFERRED_SIZE, 1080, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelMain, GroupLayout.PREFERRED_SIZE, 1080, GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -206,33 +190,30 @@ public class Login extends JFrame {
         try {
             String username = this.username.getText().trim();
             char[] password = this.password.getPassword();
-//            String username = "milan";
-//            char[] password = {'1', '2', '3'};
 
             // performing request validation
-            if (!validateRequest(username, password))
-                return;
+//            if (!validateRequest(username, password)) return;
 
             // preparing request data as parameters for further processing
             String passwd = new String(password);
 
             Map<String, String> params = new HashMap<>();
-            params.put("username", username);
-            params.put("password", passwd);
+//            params.put("username", username);
+//            params.put("password", passwd);
+            params.put("id", "1");
 
             // finding user with requested username and password
             User user = Controller.getInstance().getUser(params);
 
             if (user.getFirstname() != null) {
                 this.dispose();
-                Index.main(user);
+                Dashboard.main(user);
 
             } else
                 error.setText("There is no user with those credentials.");
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.error.setText("");
-            });
+
+            // remove error message
+            Helper.delay(error, 5);
 
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -240,7 +221,9 @@ public class Login extends JFrame {
     }
 
     private void registerMouseClicked(java.awt.event.MouseEvent evt) {
+
         this.dispose();
+
         Register.main(null);
     }
 
@@ -254,10 +237,8 @@ public class Login extends JFrame {
             this.username.grabFocus();
             this.username.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorUsername.setText("");
-            });
+            // remove error message
+            Helper.delay(this.errorUsername, 5);
         }
 
         if (password.length == 0) {
@@ -266,17 +247,11 @@ public class Login extends JFrame {
             this.password.grabFocus();
             this.password.requestFocus();
 
-            // execute code after xx seconds
-            CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS).execute(() -> {
-                this.errorPassword.setText("");
-
-            });
+            // remove error message
+            Helper.delay(this.errorUsername, 5);
         }
 
         return result;
-
     }
 
-
 }
-

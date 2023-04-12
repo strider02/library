@@ -2,6 +2,7 @@ package views;
 
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author admin
@@ -32,6 +33,8 @@ public class Welcome extends JFrame {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setSize(new java.awt.Dimension(1920, 1080));
         setTitle("Java Core Swing GUI project - Welcome");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(Welcome.class.getResource("../storage/icons/favicon.png")));
+
 
         background.setLayout(null);
         background.setSize(new java.awt.Dimension(1920, 1080));
