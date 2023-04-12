@@ -35,4 +35,6 @@ public interface QueryBuilder {
      */
     String get();
     String insert();
+    String delete();
+
 }

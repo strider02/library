@@ -1,12 +1,20 @@
 package views.modalWindows;
 
 import bootstrap.Helper;
+import bootstrap.UserValidator;
+import controllers.Controller;
 import models.User;
 import views.Dashboard;
+import views.Register;
 import views.Welcome;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author admin
@@ -14,11 +22,14 @@ import java.awt.*;
 public class AddUserForm extends JFrame {
 
     private static User user;
+    private File file = null;
+
     private JPanel createOperationPanel;
     private ButtonGroup roleButtonGroup;
     private JRadioButton adminRadio, employeeRadio, clientRadio;
-    private JLabel createOperationTitleDetails, backToAllUsers, createOperationTitleMain, emailLabel, errorEmail, errorLastname, errorName, errorPassword, errorUsername, imageLabel, imagePreviewLabel, lastnameLabel, nameLabel, passwordlLabel, roleLabel, usernameLabel;
-    private JTextField email, lastname, name, password, passwordRepeat, username;
+    private JLabel createOperationTitleDetails, backToAllUsers, createOperationTitleMain, emailLabel, errorEmail, errorLastname, errorFirstname, errorPassword, errorUsername, imageLabel, imagePreviewLabel, lastnameLabel, nameLabel, passwordlLabel, roleLabel, usernameLabel, noty;
+    private JTextField email, lastname, firstname, username;
+    private JPasswordField password, passwordRepeat;
     private JButton browse, cancel, submit;
 
 
@@ -38,7 +49,7 @@ public class AddUserForm extends JFrame {
         createOperationTitleMain = new JLabel();
         createOperationTitleDetails = new JLabel();
         nameLabel = new JLabel();
-        name = new JTextField();
+        firstname = new JTextField();
         backToAllUsers = new JLabel();
         lastnameLabel = new JLabel();
         lastname = new JTextField();
@@ -47,18 +58,19 @@ public class AddUserForm extends JFrame {
         usernameLabel = new JLabel();
         username = new JTextField();
         passwordlLabel = new JLabel();
-        password = new JTextField();
-        passwordRepeat = new JTextField();
+        password = new JPasswordField();
+        passwordRepeat = new JPasswordField();
         roleLabel = new JLabel();
         adminRadio = new JRadioButton();
         employeeRadio = new JRadioButton();
         clientRadio = new JRadioButton();
         imageLabel = new JLabel();
+        noty = new JLabel();
         imagePreviewLabel = new JLabel();
         browse = new JButton();
         submit = new JButton();
         cancel = new JButton();
-        errorName = new JLabel();
+        errorFirstname = new JLabel();
         errorLastname = new JLabel();
         errorEmail = new JLabel();
         errorUsername = new JLabel();
@@ -70,6 +82,14 @@ public class AddUserForm extends JFrame {
 
         createOperationPanel.setFocusTraversalPolicyProvider(true);
 
+        // noty
+        noty.setVisible(false);
+        noty.setFont(new java.awt.Font("Segoe UI", Font.BOLD, 14));
+        noty.setHorizontalAlignment(0);
+        noty.setOpaque(true);
+        noty.setBounds(1920 - 750, 40, 400, 60);
+        createOperationPanel.add(noty);
+
         createOperationTitleMain.setFont(new Font("Segoe UI", Font.BOLD, 22));
         createOperationTitleMain.setText("Users");
 
@@ -77,7 +97,7 @@ public class AddUserForm extends JFrame {
         createOperationTitleDetails.setText("Add user.");
 
         nameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        nameLabel.setText("Name");
+        nameLabel.setText("Firstname");
 
         backToAllUsers.setForeground(new Color(102, 102, 255));
         backToAllUsers.setText("<< Back to all users");
@@ -125,11 +145,21 @@ public class AddUserForm extends JFrame {
 
         browse.setText("Choose file");
         browse.setInheritsPopupMenu(true);
+        browse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Helper.browseActionPerformed(file, imagePreviewLabel);
+            }
+        });
 
         submit.setBackground(new Color(0, 153, 76, 90));
         submit.setFont(new Font("Segoe UI", Font.BOLD, 14));
         submit.setForeground(new Color(255, 255, 255));
         submit.setText("Save and back");
+        submit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitActionPerformed(evt);
+            }
+        });
 
         cancel.setBackground(new Color(204, 0, 0, 90));
         cancel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -145,30 +175,30 @@ public class AddUserForm extends JFrame {
             }
         });
 
-        errorName.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
-        errorName.setForeground(new Color(153, 0, 0));
-        errorName.setHorizontalAlignment(SwingConstants.RIGHT);
-        errorName.setText("Name is required");
+        errorFirstname.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
+        errorFirstname.setForeground(new Color(153, 0, 0));
+        errorFirstname.setHorizontalAlignment(SwingConstants.RIGHT);
+        errorFirstname.setName("errorFirstname");
 
         errorLastname.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorLastname.setForeground(new Color(153, 0, 0));
         errorLastname.setHorizontalAlignment(SwingConstants.RIGHT);
-        errorLastname.setText("Last name is required");
+        errorLastname.setName("errorLastname");
 
         errorEmail.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorEmail.setForeground(new Color(153, 0, 0));
         errorEmail.setHorizontalAlignment(SwingConstants.RIGHT);
-        errorEmail.setText("Email is required");
+        errorEmail.setName("errorEmail");
 
         errorUsername.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorUsername.setForeground(new Color(153, 0, 0));
         errorUsername.setHorizontalAlignment(SwingConstants.RIGHT);
-        errorUsername.setText("Username is required");
+        errorUsername.setName("errorUsername");
 
         errorPassword.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorPassword.setForeground(new Color(153, 0, 0));
         errorPassword.setHorizontalAlignment(SwingConstants.RIGHT);
-        errorPassword.setText("Password is required and has to be match");
+        errorPassword.setName("errorPassword");
 
         GroupLayout createOperationPanelLayout = new GroupLayout(createOperationPanel);
         createOperationPanel.setLayout(createOperationPanelLayout);
@@ -194,7 +224,7 @@ public class AddUserForm extends JFrame {
                                                                                 .addComponent(createOperationTitleDetails, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
                                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                                                 .addComponent(backToAllUsers, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE))
-                                                                        .addComponent(name, GroupLayout.PREFERRED_SIZE, 943, GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(firstname, GroupLayout.PREFERRED_SIZE, 943, GroupLayout.PREFERRED_SIZE)
                                                                         .addGroup(createOperationPanelLayout.createSequentialGroup()
                                                                                 .addComponent(adminRadio, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
                                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
@@ -204,7 +234,7 @@ public class AddUserForm extends JFrame {
                                                                         .addGroup(createOperationPanelLayout.createSequentialGroup()
                                                                                 .addComponent(nameLabel, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
                                                                                 .addGap(18, 18, 18)
-                                                                                .addComponent(errorName, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                                .addComponent(errorFirstname, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                                         .addGroup(createOperationPanelLayout.createSequentialGroup()
                                                                                 .addComponent(lastnameLabel, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
                                                                                 .addGap(18, 18, 18)
@@ -250,9 +280,9 @@ public class AddUserForm extends JFrame {
                                                                         .addGroup(createOperationPanelLayout.createSequentialGroup()
                                                                                 .addGroup(createOperationPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                                         .addComponent(nameLabel, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(errorName))
+                                                                                        .addComponent(errorFirstname))
                                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(name, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                                                                                .addComponent(firstname, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
                                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                                                                 .addComponent(lastnameLabel, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
                                                                         .addComponent(errorLastname))
@@ -311,5 +341,91 @@ public class AddUserForm extends JFrame {
         setLocationRelativeTo(null);
     }
 
+
+    private void submitActionPerformed(java.awt.event.ActionEvent evt) {
+
+        try {
+            // requested inputs and values
+            Map<String, String> request = new HashMap<>();
+
+            request.put("firstname", this.firstname.getText().trim());
+            request.put("lastname", this.lastname.getText().trim());
+            request.put("email", this.email.getText().trim());
+            request.put("username", this.username.getText().trim());
+            request.put("password", new String(this.password.getPassword()).trim());
+            request.put("passwordRepeat", new String(this.passwordRepeat.getPassword()).trim());
+
+            String role = Helper.getSelectedItem(roleButtonGroup);
+
+            if (role != null)
+                request.put("role_id", role);
+
+            if (file != null)
+                request.put("image", this.file.getName());
+
+
+            // performing request validation
+            Map<String, String> validated = UserValidator.validate(request);
+
+            if (!validated.isEmpty()) {
+                // Handle validation errors here (e.g., display error messages to the user)
+                Helper.showValidationMessages(createOperationPanel, validated);
+
+            } else {
+
+                // Validation passed, do something with the input data (e.g., save it to a database)
+                Map<String, String> params = new HashMap<>();
+                params.put("username", request.get("username"));
+
+
+                // checking if user with provided username exists
+                User user = Controller.getInstance().getUser(params);
+
+
+                if (user.getUsername() != null) {
+
+                    Helper.showNoty(noty, "Sorry, requested username already exists. Please provide another one.", "danger", 5);
+
+
+                } else {
+                    String image = null;
+
+                    params.clear();
+
+                    params.put("firstname", request.get("firstname"));
+                    params.put("lastname", request.get("lastname"));
+                    params.put("email", request.get("email"));
+                    params.put("username", request.get("username"));
+                    params.put("password", request.get("password"));
+
+                    if (role != null)
+                        request.put("role_id", role);
+
+                    if (image != null)
+                        params.put("image", "storage/avatars/" + image);
+
+
+                    // save and login new user
+                    User newUser = Controller.getInstance().addAndReturnUser(params);
+
+                    if (newUser.getUsername() == null) {
+                        Helper.showNoty(noty, "Error occurred while registration process.", "danger", 5);
+
+                        return;
+                    }
+
+                    // saving image to disk after successful storing new user to database
+                    if (file != null)
+                        Helper.storeFile(file, null);
+
+                    this.dispose();
+                    Dashboard.main(newUser);
+                }
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
 }

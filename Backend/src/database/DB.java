@@ -166,6 +166,17 @@ public class DB implements QueryBuilder {
         return sb.toString();
     }
 
+    public String delete() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("DELETE FROM ");
+        sb.append(this.table);
+        sb.append(" WHERE ").append(this.where);
+
+        return sb.toString();
+    }
+
     public String save() {
 
         StringBuilder sb = new StringBuilder();

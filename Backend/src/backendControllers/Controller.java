@@ -368,6 +368,27 @@ public class Controller {
         return users;
     }
 
+    public boolean deleteUser(User user) throws Exception {
+
+        DB db = DB.getInstance();
+
+        String query = db
+                .table(user.getTable())
+                .where("users.id = " + user.getId())
+                .delete();
+
+        Statement s = DB.getInstance().getConnection().createStatement();
+        int rowsAffected = s.executeUpdate(query);
+
+        if (rowsAffected > 0) {
+            db.commit();
+            return true;
+        } else {
+            db.rollback();
+            return false;
+        }
+    }
+
     /*
      | --------------------------------
      | HELPERS

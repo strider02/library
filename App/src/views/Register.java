@@ -1,17 +1,14 @@
 package views;
 
 import bootstrap.Helper;
+import bootstrap.UserValidator;
 import controllers.Controller;
 import models.User;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -22,7 +19,6 @@ import java.util.logging.Logger;
  */
 public class Register extends JFrame {
 
-    // Variables declaration
     private JPanel background;
     private JLabel window, form, profileIcon, firstnameLabel, lastnameLabel, emailLabel, usernameLabel, passwordLabel, imageLabel;
     private JLabel errorFirstname, errorLastname, errorEmail, errorUsername, errorPassword, error;
@@ -32,7 +28,6 @@ public class Register extends JFrame {
     private JButton browse, submit;
 
     private File file = null;
-    // End of variables declaration
 
 
     /**
@@ -104,12 +99,15 @@ public class Register extends JFrame {
         // set size and layout
         background.setLayout(null);
         background.setSize(new Dimension(1920, 1080));
+        background.setName("background");
 
         // avatar icon
         profileIcon.setIcon(new ImageIcon("App/src/storage/avatar80X80.png"));
         profileIcon.setHorizontalAlignment(SwingConstants.CENTER);
         profileIcon.setVerticalAlignment(SwingConstants.CENTER);
         profileIcon.setBounds(0, -300, 1920, 1080);
+        profileIcon.setName("profileIcon");
+
         background.add(profileIcon);
 
 
@@ -119,6 +117,8 @@ public class Register extends JFrame {
         error.setHorizontalAlignment(SwingConstants.CENTER);
         error.setVerticalAlignment(SwingConstants.CENTER);
         error.setBounds(1920 / 2 - 230, 1080 / 2 - 220, 460, 25);
+        error.setName("error");
+
         background.add(error);
 
         // firstname
@@ -133,67 +133,81 @@ public class Register extends JFrame {
         errorFirstname.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorFirstname.setForeground(new Color(153, 0, 51));
         errorFirstname.setBounds(1920 / 2 - 45, 1080 / 2 - 140, 200, 23);
+
         background.add(errorFirstname);
 
         // lastname
         lastnameLabel.setText("Last name");
         lastnameLabel.setBounds(1920 / 2 - 160, 1080 / 2 - 120, 70, 23);
+        lastnameLabel.setName("lastnameLabel");
         background.add(lastnameLabel);
 
         lastname.setBounds(1920 / 2 - 50, 1080 / 2 - 120, 200, 23);
+        lastname.setName("lastname");
         background.add(lastname);
 
         errorLastname.setName("errorLastname");
         errorLastname.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorLastname.setForeground(new Color(153, 0, 51));
         errorLastname.setBounds(1920 / 2 - 45, 1080 / 2 - 100, 200, 23);
+        errorLastname.setName("errorLastname");
         background.add(errorLastname);
 
         // email
         emailLabel.setText("Email");
         emailLabel.setBounds(1920 / 2 - 160, 1080 / 2 - 80, 70, 23);
+        emailLabel.setName("emailLabel");
         background.add(emailLabel);
 
         email.setBounds(1920 / 2 - 50, 1080 / 2 - 80, 200, 23);
+        email.setName("email");
         background.add(email);
 
         errorEmail.setName("errorEmail");
         errorEmail.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorEmail.setForeground(new Color(153, 0, 51));
         errorEmail.setBounds(1920 / 2 - 45, 1080 / 2 - 60, 200, 23);
+        errorEmail.setName("errorEmail");
         background.add(errorEmail);
 
         // username
         usernameLabel.setText("Username");
         usernameLabel.setBounds(1920 / 2 - 160, 1080 / 2 - 40, 70, 23);
+        usernameLabel.setName("usernameLabel");
         background.add(usernameLabel);
 
         username.setBounds(1920 / 2 - 50, 1080 / 2 - 40, 200, 23);
+        username.setName("username");
         background.add(username);
 
         errorUsername.setName("errorUsername");
         errorUsername.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorUsername.setForeground(new Color(153, 0, 51));
         errorUsername.setBounds(1920 / 2 - 45, 1080 / 2 - 20, 200, 23);
+        errorUsername.setName("errorUsername");
         background.add(errorUsername);
 
         // password
         passwordLabel.setText("Password");
         passwordLabel.setBounds(1920 / 2 - 160, 1080 / 2, 70, 23);
+        passwordLabel.setName("passwordLabel");
         background.add(passwordLabel);
 
         password.setBounds(1920 / 2 - 50, 1080 / 2, 200, 23);
+        password.setName("password");
         background.add(password);
 
 
         // repeat password
         passwordRepeat.setBounds(1920 / 2 - 50, 1080 / 2 + 20, 200, 23);
+        passwordRepeat.setName("passwordRepeat");
         background.add(passwordRepeat);
 
         errorPassword.setName("errorPassword");
         errorPassword.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 9));
         errorPassword.setForeground(new Color(153, 0, 51));
         errorPassword.setBounds(1920 / 2 - 45, 1080 / 2 + 40, 200, 23);
+        errorPassword.setName("errorPassword");
         background.add(errorPassword);
 
         // image
@@ -206,15 +220,17 @@ public class Register extends JFrame {
         imageLabel.setVerticalAlignment(SwingConstants.CENTER);
         imageLabel.setBackground(new Color(60, 63, 65, 10));
         imageLabel.setBounds(1920 / 2 - 50, 1080 / 2 + 80, 80, 80);
+        imageLabel.setName("imageLabel");
         background.add(imageLabel);
 
         browse.setText("Browse");
         browse.setBounds(1920 / 2 - 160, 1080 / 2 + 140, 80, 20);
         browse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                browseActionPerformed(evt);
+                Helper.browseActionPerformed(file, imageLabel);
             }
         });
+        browse.setName("imageLabel");
         background.add(browse);
 
         // submit button action
@@ -225,6 +241,7 @@ public class Register extends JFrame {
                 submitActionPerformed(evt);
             }
         });
+        submit.setName("submit");
         background.add(submit);
 
         // login action
@@ -237,6 +254,7 @@ public class Register extends JFrame {
                 loginMouseClicked(evt);
             }
         });
+        login.setName("login");
         background.add(login);
 
         // card background image
@@ -244,11 +262,13 @@ public class Register extends JFrame {
         form.setHorizontalAlignment(SwingConstants.CENTER);
         form.setVerticalAlignment(SwingConstants.CENTER);
         form.setBounds(0, -70, 1920, 1080);
+        form.setName("form");
         background.add(form);
 
         // default background image
         window.setIcon(new ImageIcon("App/src/storage/background.jpg"));
         window.setBounds(0, 0, 1920, 1080);
+        window.setName("window");
         background.add(window);
 
 
@@ -270,74 +290,83 @@ public class Register extends JFrame {
     private void submitActionPerformed(java.awt.event.ActionEvent evt) {
 
         try {
-            String firstname = this.firstname.getText().trim();
-            String lastname = this.lastname.getText().trim();
-            String email = this.email.getText().trim();
-            String username = this.username.getText().trim();
-            char[] password = this.password.getPassword();
-            char[] passwordRepeat = this.passwordRepeat.getPassword();
+            // requested inputs and values
+            Map<String, String> request = new HashMap<>();
+
+            request.put("firstname", this.firstname.getText().trim());
+            request.put("lastname", this.lastname.getText().trim());
+            request.put("email", this.email.getText().trim());
+            request.put("username", this.username.getText().trim());
+            request.put("password", new String(this.password.getPassword()).trim());
+            request.put("passwordRepeat", new String(this.passwordRepeat.getPassword()).trim());
+
             String image = null;
-
             if (file != null)
-                image = file.getName();
-
-
-            // convert array to string
-            String pass = new String(password);
-            String passRepeat = new String(passwordRepeat);
+                request.put("image", this.file.getName());
 
 
             // performing request validation
-            if (!validateRequest(firstname, lastname, email, username, pass, passRepeat)) return;
+            Map<String, String> validated = UserValidator.validate(request);
 
-            Map<String, String> params = new HashMap<>();
-            params.put("username", username);
-
-
-            // checking if user with provided username exists
-            User user = Controller.getInstance().getUser(params);
-
-
-            if (user.getUsername() != null) {
-
-                error.setText("Sorry, requested username already exists. Please provide another one.");
-                this.username.grabFocus();
-                this.username.requestFocus();
-
-                // removing error message
-                Helper.delay(error, 5);
+            if (!validated.isEmpty()) {
+                // Handle validation errors here (e.g., display error messages to the user)
+                Helper.showValidationMessages(background, validated);
 
             } else {
 
-                params.clear();
-                params.put("firstname", firstname);
-                params.put("lastname", lastname);
-                params.put("email", email);
-                params.put("username", username);
-                params.put("password", pass);
-                if (image != null)
-                    params.put("image", "storage/avatars/" + image);
+                // Validation passed, do something with the input data (e.g., save it to a database)
+                Map<String, String> params = new HashMap<>();
+                params.put("username", request.get("username"));
 
 
-                // save and login new user
-                User newUser = Controller.getInstance().addAndReturnUser(params);
+                // checking if user with provided username exists
+                User user = Controller.getInstance().getUser(params);
 
-                if (newUser.getUsername() == null) {
-                    error.setText("Error occurred while registration process.");
+
+                System.out.println("User: " + user.getFirstname());
+
+
+                if (user.getUsername() != null) {
+
+                    error.setText("Sorry, requested username already exists. Please provide another one.");
+                    this.username.grabFocus();
+                    this.username.requestFocus();
 
                     // removing error message
-                    Helper.delay(this.error, 5);
+                    Helper.delay(error, 5);
+
+                } else {
+
+                    params.clear();
+                    params.put("firstname", request.get("firstname"));
+                    params.put("lastname", request.get("lastname"));
+                    params.put("email", request.get("email"));
+                    params.put("username", request.get("username"));
+                    params.put("password", request.get("password"));
+                    if (image != null)
+                        params.put("image", "storage/avatars/" + image);
 
 
-                    return;
+                    // save and login new user
+                    User newUser = Controller.getInstance().addAndReturnUser(params);
+
+                    if (newUser.getUsername() == null) {
+                        error.setText("Error occurred while registration process.");
+
+                        // removing error message
+                        Helper.delay(this.error, 5);
+
+
+                        return;
+                    }
+
+                    // saving image to disk after successful storing new user to database
+                    if (file != null)
+                        Helper.storeFile(file, null);
+
+                    this.dispose();
+                    Dashboard.main(newUser);
                 }
-
-                // saving image to disk after successful storing new user to database
-                if (file != null)
-                    this.storeFile(file, null);
-
-                this.dispose();
-//                Dashboard.main(newUser);
             }
 
         } catch (Exception ex) {
@@ -346,127 +375,11 @@ public class Register extends JFrame {
     }
 
 
-    private void browseActionPerformed(java.awt.event.ActionEvent evt) {
-        JFileChooser browseImageFile = new JFileChooser();
-        int showOpenDialog = browseImageFile.showOpenDialog(null);
-
-        // extension filter
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("IMAGES", "png", "jpg", "jpeg");
-        browseImageFile.addChoosableFileFilter(filter);
-
-        if (showOpenDialog == JFileChooser.APPROVE_OPTION) {
-            file = browseImageFile.getSelectedFile();
-            String selectedImagePath = file.getAbsolutePath();
-
-            // resizing
-            ImageIcon icon = new ImageIcon(selectedImagePath);
-            Image image = icon.getImage().getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
-
-
-            // setting image on form label
-            imageLabel.setText(null);
-            imageLabel.setIcon(new ImageIcon(image));
-        }
-    }
-
     private void loginMouseClicked(java.awt.event.MouseEvent evt) {
         this.dispose();
         Login.main(null);
     }
 
-    private boolean validateRequest(String firstname, String lastname, String email, String username, String password, String passwordRepeat) {
 
-        boolean result = true;
-
-        if (firstname == null | firstname.equals("")) {
-            result = false;
-            this.errorFirstname.setText("First name is required!");
-            this.firstname.grabFocus();
-            this.firstname.requestFocus();
-
-            // removing error message
-            Helper.delay(this.errorFirstname, 5);
-        }
-
-        if (lastname == null | lastname.equals("")) {
-            result = false;
-            this.errorLastname.setText("Last name is required!");
-            this.lastname.grabFocus();
-            this.lastname.requestFocus();
-
-            // removing error message
-            Helper.delay(this.errorLastname, 5);
-        }
-
-        if (!email.contains("@")) {
-            result = false;
-            this.errorEmail.setText("Email is required!");
-            this.email.grabFocus();
-            this.email.requestFocus();
-
-            // removing error message
-            Helper.delay(this.errorEmail, 5);
-        }
-
-        if (username == null | username.equals("")) {
-            result = false;
-            this.errorUsername.setText("Username is required!");
-            this.username.grabFocus();
-            this.username.requestFocus();
-
-            // removing error message
-            Helper.delay(this.errorUsername, 5);
-        }
-
-        if (password == null | password.equals("")) {
-            result = false;
-            this.errorPassword.setText("Password is required!");
-            this.password.grabFocus();
-            this.password.requestFocus();
-
-            // removing error message
-            Helper.delay(this.errorPassword, 5);
-        }
-
-        if (!passwordRepeat.equals(password)) {
-            result = false;
-            this.errorPassword.setText("Not match!");
-            this.password.grabFocus();
-            this.password.requestFocus();
-
-            // removing error message
-            Helper.delay(this.errorPassword, 5);
-        }
-
-        return result;
-    }
-
-    private void storeFile(File file, String path) {
-
-        String filePath = file.getAbsolutePath();
-        String filename = Paths.get(filePath).getFileName().toString();
-        if (path == null)
-            path = "App/src/storage/avatars/";
-
-        File directory = new File(path);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
-        File sourceFile = new File(filePath);
-        File destinationFile = new File(path + filename);
-
-        // if file exists we don't want to save it again
-        // at this point file path is already persisted into database
-        if (destinationFile.exists()) return;
-
-        try {
-            // coping file is not good decision
-            // this is just for presentational purposes
-            Files.copy(sourceFile.toPath(), destinationFile.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
 

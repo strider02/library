@@ -132,18 +132,25 @@ public class Controller {
         return crud.all();
     }
 
-    public List<User> getUsersWithRole(String roleName) throws Exception{
+    public List<User> getUsersWithRole(String roleName) throws Exception {
 
         UserCrudController crud = new UserCrudController();
 
         return crud.getUsersWithRole(roleName);
     }
 
-    public User findUser(int user_id) throws Exception{
+    public User findUser(int user_id) throws Exception {
 
         UserCrudController crud = new UserCrudController();
 
         return crud.find(user_id);
+    }
+
+    public boolean deleteUser(int user_id) throws Exception {
+
+        UserCrudController crud = new UserCrudController();
+
+        return crud.delete(user_id);
     }
 
     /*
@@ -155,11 +162,12 @@ public class Controller {
         params.forEach((column, value) -> {
             Method method = null;
             String crumb = column.substring(0, 1).toUpperCase() + column.substring(1);
+            String part = crumb.replace("_", "");
 
             try {
                 method = model
                         .getClass()
-                        .getMethod("set" + crumb, String.class);
+                        .getMethod("set" + part, String.class);
 
                 method.invoke(model, value);
 

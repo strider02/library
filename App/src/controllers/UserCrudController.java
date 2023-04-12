@@ -131,6 +131,30 @@ public class UserCrudController implements CrudController<User> {
         return (boolean) sto.getResult();
     }
 
+    public boolean delete(int id) throws Exception {
+
+        User user = new User();
+        user.setId(id);
+        user.setWhere("id =" + id);
+
+        // creating transfer object from client side
+        transfers.Client cto = new transfers.Client();
+        cto.setOperation(DELETE_USER);
+        cto.setParameter(user);
+
+        // sending request to server
+        Controller.getInstance().request(cto);
+
+        // getting response from server
+        Server sto = Controller.getInstance().response();
+
+        if (sto.getStatus() == SERVER_STATUS_NOK)
+            throw new Exception(sto.getError());
+
+
+        return (boolean) sto.getResult();
+    }
+
     public User storeAndReturn(User user, Map<String, String> params) throws Exception {
 
         StringBuilder values = new StringBuilder();

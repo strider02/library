@@ -140,6 +140,17 @@ public class Resolver extends Thread {
                         }
                         respond(sto);
                     }
+                    case DELETE_USER -> {
+                        try {
+                            boolean result = Controller.getInstance().deleteUser((User) cto.getParameter());
+                            sto.setResult(result);
+                            sto.setStatus(SERVER_STATUS_OK);
+                        } catch (Exception e) {
+                            sto.setStatus(SERVER_STATUS_NOK);
+                            sto.setError(e.getMessage());
+                        }
+                        respond(sto);
+                    }
 
                 }
 

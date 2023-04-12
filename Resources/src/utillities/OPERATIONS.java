@@ -10,6 +10,7 @@ public class OPERATIONS {
     public static final int GET_ROLES = 106;
     public static final int GET_USERS_WITH_ROLE = 107;
     public static final int FIND_USER = 108;
+    public static final int DELETE_USER = 109;
 
 
 }

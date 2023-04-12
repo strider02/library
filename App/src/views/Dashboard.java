@@ -151,7 +151,23 @@ public class Dashboard extends JFrame {
 
                 if (isCanDelete()) {
                     // delete row
-                    System.out.println("Delete row " + row);
+
+                    DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+                    int id = (int) model.getValueAt(row, 0);
+
+                    try {
+                        int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this record?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                        if (result == JOptionPane.YES_OPTION) {
+
+                            if (Controller.getInstance().deleteUser(id)) {
+                                List allUsers = null;
+                                allUsers = Controller.getInstance().getUsers();
+                                Helper.populateUsersTable(dataTable, allUsers);
+                            }
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     // show noty
                     Helper.showNoty(noty, "Sorry, you don't have privileges to perform DELETE action.", "warning", 5);

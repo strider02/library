@@ -165,6 +165,7 @@ public class EditUserForm extends JFrame {
         cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 try {
+                    dispose();
                     Dashboard.main(user);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
