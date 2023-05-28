@@ -36,7 +36,7 @@ values ('admin'),
 
 -- inserting initial test user records
 insert into users (firstname, lastname, email, username, password, role_id, image, created_at, updated_at)
-values ('Joe', 'Doe', 'joe.doe@gmail.com', 'joe', 123, 1, 'storage/avatars/images.png', '2023-03-18 22:07:03',
+values ('Joe', 'Doe', 'joe.doe@gmail.com', 'joe', 123, 1, 'storage/avatars/0-02-05-05c271785fd6166f6cf10c1e5fbe6a0582c14772bbdfc4fb6ef81e12e4131275_8369f590.jpg', '2023-03-18 22:07:03',
         '2023-03-18 22:07:03'),
        ('Rocco', 'Simpson', 'rocco.simpson@mail.com', 'rocco', 123, 2, 'storage/avatars/images.png',
         '2023-03-20 20:41:59', '2023-03-20 20:41:59'),
@@ -46,7 +46,7 @@ values ('Joe', 'Doe', 'joe.doe@gmail.com', 'joe', 123, 1, 'storage/avatars/image
         '2023-04-02 14:31:41', '2023-04-02 14:31:41'),
        ('Jessie', 'Murphy', 'jessie.murphy@mail.com', 'jessie', 123, 3, 'storage/avatars/images.png',
         '2023-04-02 14:31:41', '2023-04-02 14:31:41'),
-       ('Esme', 'Gordon', 'esme.gordon@mail.com', 'esme', 123, 3, 'storage/avatars/images.png', '2023-04-02 14:31:41',
+       ('Esme', 'Gordon', 'esme.gordon@mail.com', 'esme', 123, 3, 'storage/avatars/0-02-05-05c271785fd6166f6cf10c1e5fbe6a0582c14772bbdfc4fb6ef81e12e4131275_8369f590.jpg', '2023-04-02 14:31:41',
         '2023-04-02 14:31:41'),
        ('Molly', 'Parker', 'molly.parker@mail.com', 'molly', 123, 3, 'storage/avatars/images.png',
         '2023-04-02 14:31:41', '2023-04-02 14:31:41'),
@@ -56,7 +56,7 @@ values ('Joe', 'Doe', 'joe.doe@gmail.com', 'joe', 123, 1, 'storage/avatars/image
         '2023-04-02 14:31:41', '2023-04-02 14:31:41'),
        ('Natalie', 'Ruiz', 'natalie.ruiz@mail.com', 'natalie', 123, 3, 'storage/avatars/images.png',
         '2023-04-02 14:31:41', '2023-04-02 14:31:41'),
-       ('Ashton', 'Crowder', 'ashton.crowder@mail.com', 'ashton', 123, 2, 'storage/avatars/FactoryPattern.png',
+       ('Ashton', 'Crowder', 'ashton.crowder@mail.com', 'ashton', 123, 2, 'storage/avatars/0-02-05-05c271785fd6166f6cf10c1e5fbe6a0582c14772bbdfc4fb6ef81e12e4131275_8369f590.jpg',
         '2023-04-12 16:46:28', '2023-04-12 16:46:28'),
        ('Davaa', 'Kakalina', 'davaa.kakalina@mail.com', 'davaa', 123, 2, null, '2023-04-13 00:39:42',
         '2023-04-13 00:39:42'),
